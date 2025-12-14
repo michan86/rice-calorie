@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>カロリー＆お米量診断</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue","Segoe UI", sans-serif;}
+    body { margin:0; padding:20px; background:#f4f4f4; color:#333;}
+    .container {
+      max-width:480px; margin:0 auto; background:#fff; padding:20px 18px 24px;
+      border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.08);
+    }
+    h1 { font-size:20px; text-align:center; margin-bottom:8px;}
+    .subtitle { font-size:12px; text-align:center; color:#777; margin-bottom:16px;}
+    label { display:block; font-size:14px; margin-bottom:4px; font-weight:600;}
+    select, input {
+      width:100%; padding:8px 10px; margin-bottom:14px; border-radius:8px; border:1px solid #ddd; font-size:14px;
+    }
+    button {
+      width:100%; padding:10px; border:none; border-radius:999px; background:#ff9f4a;
+      color:#fff; font-size:15px; font-weight:700; cursor:pointer; margin-top:4px;
+    }
+    .result-box {
+      margin-top:18px; padding:14px; border-radius:10px; background:#fff8f0; border:1px solid #ffd2a3; font-size:14px;
+    }
+    .result-box h2 { font-size:16px; margin:0 0 10px 0; }
+    .block-title { margin-top:12px; font-weight:700; font-size:14px; margin-bottom:6px; }
+    .result-row { display:flex; justify-content:space-between; margin-bottom:6px;}
+    .result-label { color:#555; font-size:13px; }
+    .result-value { font-weight:700; font-size:13px; }
+    .footer { text-align:center; font-size:11px; color:#aaa; margin-top:12px; }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>カロリー＆お米量診断</h1>
+    <p class="subtitle">体重だけでサクッと目安をチェック</p>
+
+    <label for="sex">性別</label>
+    <select id="sex">
+      <option value="female">女性</option>
+      <option value="male">男性</option>
+    </select>
+
+    <label for="weight">体重（kg）</label>
+    <input id="weight" type="number" min="30" max="200" step="0.1" placeholder="例：60" />
+
+    <button id="calcBtn">診断する</button>
+
+    <div id="result" class="result-box" style="display:none;">
+      <h2>診断結果</h2>
+
+      <div class="block-title">■ 設定カロリー</div>
+      <div class="result-row">
+        <div class="result-label">1日の設定カロリー</div>
+        <div class="result-value"><span id="calRange"></span> kcal</div>
+      </div>
+
+      <div class="block-title">■ 1日のお米の量（白米）</div>
+      <div class="result-row">
+        <div class="result-label">1日の白米量</div>
+        <div class="result-value"><span id="riceRange"></span> g</div>
+      </div>
+
+      <div class="block-title">■ 3食の場合の1食あたり</div>
+      <div class="result-row">
+        <div class="result-label">1食あたり</div>
+        <div class="result-value"><span id="ricePerRange"></span> g</div>
+      </div>
+    </div>
+
+    <p class="footer">ONESTEP GYM / SUSUMU</p>
+  </div>
+
+  <script>
+    document.getElementById("calcBtn").addEventListener("click", function () {
+      const sex = document.getElementById("sex").value;
+      const weight = parseFloat(document.getElementById("weight").value);
+
+      if (!weight || weight <= 0) {
+        alert("体重を入力してください。");
+        return;
+      }
+
+      // 女性：体重×22　男性：体重×24
+      const base = sex === "female" ? weight * 22 : weight * 24;
+
+      const calMin = Math.round(base + 300);
+      const calMax = Math.round(base + 500);
+
+      // 白米量の計算
+      const calcRice = (c) => Math.ceil((c / 2 / 4 / 37) * 100);
+
+      const riceMin = calcRice(calMin);
+      const riceMax = calcRice(calMax);
+
+      const ricePerMin = Math.ceil(riceMin / 3);
+      const ricePerMax = Math.ceil(riceMax / 3);
+
+      // 表示
+      document.getElementById("calRange").textContent = `${calMin}〜${calMax}`;
+      document.getElementById("riceRange").textContent = `${riceMin}〜${riceMax}`;
+      document.getElementById("ricePerRange").textContent = `${ricePerMin}〜${ricePerMax}`;
+
+      document.getElementById("result").style.display = "block";
+    });
+  </script>
+</body>
+</html>
